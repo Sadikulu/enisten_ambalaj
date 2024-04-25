@@ -381,12 +381,13 @@ public class ProductService {
                 imageFile.setShowcase(true);
             }
         }
-
-
     }
 
-
     public ProductDTO setPrice(Long id, ProductPriceUpdateRequest productPriceUpdateRequest) {
-
+//        User user=userService.getCurrentUser();
+        Product product=findProductById(id);
+        product.setPrice(productPriceUpdateRequest.getPrice());
+        productRepository.save(product);
+        return productMapper.productToProductDTO(product);
     }
 }

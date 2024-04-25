@@ -128,7 +128,7 @@ public class ProductController {
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public ResponseEntity<KSSResponse> productPriceUpdate(@PathVariable("id")Long id, @RequestBody ProductPriceUpdateRequest productPriceUpdateRequest){
         ProductDTO productDTO = productService.setPrice(id,productPriceUpdateRequest);
-        KSSResponse response = new KSSResponse(ResponseMessage.PRODUCT_LIKE_RESPONSE_MESSAGE,true, productDTO);
+        KSSResponse response = new KSSResponse(ResponseMessage.PRODUCT_PRICE_UPDATED_RESPONSE_MESSAGE,true, productDTO);
         return ResponseEntity.ok(response);
     }
 }

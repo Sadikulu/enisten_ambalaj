@@ -37,5 +37,6 @@ public class ResponseMessage {
     public final static String COUPON_MAIL_SENT_RESPONSE = "Coupon successfully sent";
     public final static String COUPON_DELETE_RESPONSE = "Coupon successfully deleted";
     public final static  String COUPON_CREATE_RESPONSE = "Coupon successfully created";
+    public final static String PRODUCT_PRICE_UPDATED_RESPONSE_MESSAGE= "Product price successfully updated";
 
 }
