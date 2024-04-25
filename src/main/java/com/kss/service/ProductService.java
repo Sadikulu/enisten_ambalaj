@@ -6,6 +6,7 @@ import com.kss.domains.enums.ProductStatus;
 import com.kss.domains.enums.RoleType;
 import com.kss.dto.MostPopularProduct;
 import com.kss.dto.ProductDTO;
+import com.kss.dto.request.ProductPriceUpdateRequest;
 import com.kss.dto.request.ProductRequest;
 import com.kss.dto.request.ProductUpdateRequest;
 import com.kss.exception.BadRequestException;
@@ -272,7 +273,7 @@ public class ProductService {
        return productMapper.productToProductDTO(product);
     }
 
-    public PageImpl<ProductDTO> findAllWithQueryAndPage(String query, List<Long> categoryId, List<Long> brandId,Integer minPrice, Integer maxPrice,ProductStatus status, Pageable pageable) {
+    public PageImpl<ProductDTO> findAllWithQueryAndPage(String query, List<Long> categoryId,Integer minPrice, Integer maxPrice,ProductStatus status, Pageable pageable) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Product> criteriaQuery = cb.createQuery(Product.class);
         Root<Product> root = criteriaQuery.from(Product.class);
@@ -290,9 +291,9 @@ public class ProductService {
             predicates.add(root.get("category").get("id").in(categoryId));
         }
 
-        if (brandId != null && !brandId.isEmpty()) {
-            predicates.add(root.get("brand").get("id").in(brandId));
-        }
+//        if (brandId != null && !brandId.isEmpty()) {
+//            predicates.add(root.get("brand").get("id").in(brandId));
+//        }
 
         if (minPrice != null && maxPrice != null){
             double doubleMin = (double) minPrice;
@@ -368,7 +369,7 @@ public class ProductService {
         Product product = productRepository.findProductByImageId(id);
         imageFileService.removeById(id);
         boolean hasShowcase = false;
-        if (product.getImage().size()>0){
+        if (!product.getImage().isEmpty()){
             for (ImageFile each:product.getImage()) {
                 if (each.isShowcase()){
                     hasShowcase = true;
@@ -381,6 +382,11 @@ public class ProductService {
             }
         }
 
+
+    }
+
+
+    public ProductDTO setPrice(Long id, ProductPriceUpdateRequest productPriceUpdateRequest) {
 
     }
 }

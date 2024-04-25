@@ -2,6 +2,7 @@ package com.kss.controller;
 
 import com.kss.domains.enums.ProductStatus;
 import com.kss.dto.ProductDTO;
+import com.kss.dto.request.ProductPriceUpdateRequest;
 import com.kss.dto.request.ProductRequest;
 import com.kss.dto.request.ProductUpdateRequest;
 import com.kss.dto.response.KSSResponse;
@@ -28,7 +29,7 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<PageImpl<ProductDTO>> getProducts(@RequestParam(value = "q",required = false) String query,
                                                             @RequestParam(value = "categories",required = false) List<Long> categoryId,
-                                                            @RequestParam(value = "brands",required = false) List<Long> brandId,
+//                                                            @RequestParam(value = "brands",required = false) List<Long> brandId,
                                                             @RequestParam(value = "minPrice",required = false) Integer minPrice,
                                                             @RequestParam(value = "maxPrice",required = false) Integer maxPrice,
                                                             @RequestParam(value = "status",required = false) ProductStatus status,
@@ -39,7 +40,7 @@ public class ProductController {
                                                                             required = false,
                                                                             defaultValue = "DESC") Direction direction){
         Pageable pageable = PageRequest.of(page,size, Sort.by(direction,prop));
-        PageImpl<ProductDTO> productDTO = productService.findAllWithQueryAndPage(query,categoryId,brandId,minPrice,maxPrice,status,pageable);
+        PageImpl<ProductDTO> productDTO = productService.findAllWithQueryAndPage(query,categoryId,minPrice,maxPrice,status,pageable);
         return ResponseEntity.ok(productDTO);
     }
 
@@ -120,6 +121,14 @@ public class ProductController {
     public ResponseEntity<KSSResponse>deleteProductImage(@PathVariable String id){
         productService.removeImageById(id);
         KSSResponse response =new KSSResponse(ResponseMessage.IMAGE_DELETE_RESPONSE_MESSAGE,true);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{id}/admin")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
+    public ResponseEntity<KSSResponse> productPriceUpdate(@PathVariable("id")Long id, @RequestBody ProductPriceUpdateRequest productPriceUpdateRequest){
+        ProductDTO productDTO = productService.setPrice(id,productPriceUpdateRequest);
+        KSSResponse response = new KSSResponse(ResponseMessage.PRODUCT_LIKE_RESPONSE_MESSAGE,true, productDTO);
         return ResponseEntity.ok(response);
     }
 }

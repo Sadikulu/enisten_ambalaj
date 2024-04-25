@@ -47,11 +47,11 @@ public class CategoryService {
 
 
     public CategoryDTO saveCategory(CategoryRequest categoryRequest) {
-        Category category=new Category();
+        Category category = new Category();
 
-        boolean existTitle= categoryRepository.existsByTitle(nameFilter.getNamesWithFilter(categoryRequest.getTitle()));
+        boolean existTitle = categoryRepository.existsByTitle(nameFilter.getNamesWithFilter(categoryRequest.getTitle()));
         if (existTitle) {
-            throw new ConflictException(String.format(ErrorMessage.CATEGORY_USED_EXCEPTION,nameFilter.getNamesWithFilter(categoryRequest.getTitle())));
+            throw new ConflictException(String.format(ErrorMessage.CATEGORY_USED_EXCEPTION, nameFilter.getNamesWithFilter(categoryRequest.getTitle())));
         }
         category.setTitle(nameFilter.getNamesWithFilter(categoryRequest.getTitle()));
         category.setStatus(CategoryStatus.NOT_PUBLISHED);
@@ -59,7 +59,7 @@ public class CategoryService {
         return categoryMapper.categoryToCategoryDTO(category);
     }
 
-    public Page<CategoryDTO> findAllWithPage(String query, CategoryStatus status,Pageable pageable) {
+    public Page<CategoryDTO> findAllWithPage(String query, CategoryStatus status, Pageable pageable) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Category> criteriaQuery = cb.createQuery(Category.class);
         Root<Category> root = criteriaQuery.from(Category.class);
@@ -73,15 +73,15 @@ public class CategoryService {
             predicates.add(cb.like(cb.lower(root.get("title")), likeSearchText));
         }
 
-        try{
-            Role role=roleService.findByRoleName(RoleType.ROLE_ADMIN);
-            boolean isAdmin=userService.getCurrentUser().getRoles().stream().anyMatch(r->r.equals(role));
+        try {
+            Role role = roleService.findByRoleName(RoleType.ROLE_ADMIN);
+            boolean isAdmin = userService.getCurrentUser().getRoles().stream().anyMatch(r -> r.equals(role));
             if (isAdmin) {
-                if (status != null){
-                    predicates.add(cb.equal(root.get("status"),status));
+                if (status != null) {
+                    predicates.add(cb.equal(root.get("status"), status));
                 }
-            }else throw  new ResourceNotFoundException(ErrorMessage.BRAND_NOT_FOUND_MESSAGE);
-        }catch(ResourceNotFoundException e){
+            } else throw new ResourceNotFoundException(ErrorMessage.BRAND_NOT_FOUND_MESSAGE);
+        } catch (ResourceNotFoundException e) {
             predicates.add(cb.equal(root.get("status"), CategoryStatus.PUBLISHED));
         }
 
@@ -100,7 +100,7 @@ public class CategoryService {
         criteriaQuery.where(finalPredicate);
 
         TypedQuery<Category> typedQuery = entityManager.createQuery(criteriaQuery);
-        typedQuery.setFirstResult((int)pageable.getOffset());
+        typedQuery.setFirstResult((int) pageable.getOffset());
         typedQuery.setMaxResults(pageable.getPageSize());
 
         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
@@ -115,32 +115,34 @@ public class CategoryService {
 
     public CategoryDTO findCategoryById(Long id) {
         Category category = null;
-        try{
-            Role role=roleService.findByRoleName(RoleType.ROLE_ADMIN);
-            boolean isAdmin=userService.getCurrentUser().getRoles().stream().anyMatch(r->r.equals(role));
+        try {
+            Role role = roleService.findByRoleName(RoleType.ROLE_ADMIN);
+            boolean isAdmin = userService.getCurrentUser().getRoles().stream().anyMatch(r -> r.equals(role));
             if (isAdmin) {
-                category=categoryRepository.findById(id).orElseThrow(()->
-                        new ResourceNotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_MESSAGE)) ;;
-            }else{
-                throw  new ResourceNotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_MESSAGE);
+                category = categoryRepository.findById(id).orElseThrow(() ->
+                        new ResourceNotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_MESSAGE));
+                ;
+            } else {
+                throw new ResourceNotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_MESSAGE);
             }
-        }catch(ResourceNotFoundException e){
-            CategoryStatus status=CategoryStatus.PUBLISHED;
-            category=categoryRepository.getCategoryByStatus_PublishedAndId(status,id).orElseThrow(()->
+        } catch (ResourceNotFoundException e) {
+            CategoryStatus status = CategoryStatus.PUBLISHED;
+            category = categoryRepository.getCategoryByStatus_PublishedAndId(status, id).orElseThrow(() ->
                     new ResourceNotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_MESSAGE));
         }
         return categoryMapper.categoryToCategoryDTO(category);
     }
 
     public CategoryDTO updateCategory(Long id, CategoryUpdateRequest categoryUpdateRequest) {
-        Category category=getCategoryById(id);
+        Category category = getCategoryById(id);
         if (category.getBuiltIn()) {
             throw new BadRequestException(ErrorMessage.NOT_PERMITTED_METHOD_MESSAGE);
         }
-        boolean existsTitle= categoryRepository.existsByTitle(nameFilter.getNamesWithFilter(categoryUpdateRequest.getTitle()));
+        boolean existsTitle = categoryRepository.existsByTitle(nameFilter.getNamesWithFilter(categoryUpdateRequest.getTitle()));
 
-        if(existsTitle && ! categoryUpdateRequest.getTitle().equalsIgnoreCase(category.getTitle())) {
-            throw new ConflictException(String.format(ErrorMessage.CATEGORY_USED_EXCEPTION,nameFilter.getNamesWithFilter(categoryUpdateRequest.getTitle())));}
+        if (existsTitle && !categoryUpdateRequest.getTitle().equalsIgnoreCase(category.getTitle())) {
+            throw new ConflictException(String.format(ErrorMessage.CATEGORY_USED_EXCEPTION, nameFilter.getNamesWithFilter(categoryUpdateRequest.getTitle())));
+        }
 
         category.setTitle(nameFilter.getNamesWithFilter(categoryUpdateRequest.getTitle()));
         category.setStatus(categoryUpdateRequest.getStatus());
@@ -150,16 +152,16 @@ public class CategoryService {
     }
 
     public CategoryDTO removeById(Long id) {
-        Category category=getCategoryById(id);
+        Category category = getCategoryById(id);
         if (category.getBuiltIn()) {
             throw new BadRequestException(ErrorMessage.NOT_PERMITTED_METHOD_MESSAGE);
         }
-        Boolean existsProduct= productRepository.existsByCategoryId(id);
+        Boolean existsProduct = productRepository.existsByCategoryId(id);
 
-        if(existsProduct){
+        if (existsProduct) {
             throw new BadRequestException(ErrorMessage.CATEGORY_CAN_NOT_DELETE_EXCEPTION);
         }
-        CategoryDTO categoryDTO=categoryMapper.categoryToCategoryDTO(category);
+        CategoryDTO categoryDTO = categoryMapper.categoryToCategoryDTO(category);
         categoryRepository.delete(category);
         return categoryDTO;
     }
@@ -174,8 +176,8 @@ public class CategoryService {
     }
 
     public List<CategoryDTO> getAllCategoryList() {
-    List<Category> categoryList = categoryRepository.findAll();
-    return categoryMapper.categoryListToCategoryDTOList(categoryList);
+        List<Category> categoryList = categoryRepository.findAll();
+        return categoryMapper.categoryListToCategoryDTOList(categoryList);
     }
 
     public void removeAllBuiltInFalseCategories() {
