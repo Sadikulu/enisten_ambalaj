@@ -16,7 +16,7 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
 
-    roleRepository.save(new Role( 1, RoleType.ROLE_CUSTOMER));
+    roleRepository.save(new Role( 1,RoleType.ROLE_CUSTOMER));
     roleRepository.save(new Role(2,RoleType.ROLE_MANAGER));
     roleRepository.save(new Role(3,RoleType.ROLE_ADMIN));
     }

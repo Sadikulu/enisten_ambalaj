@@ -27,8 +27,8 @@ public class ReviewsController {
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','CUSTOMER')")
     public ResponseEntity<KSSResponse> saveReview(@RequestBody ReviewRequest reviewRequest){
         ReviewDTO reviewDTO = reviewService.saveReview(reviewRequest);
-        KSSResponse gpmResponse = new KSSResponse(ResponseMessage.REVIEW_SAVE_RESPONSE,true, reviewDTO);
-       return new ResponseEntity<> (gpmResponse, HttpStatus.CREATED);
+        KSSResponse KSSResponse = new KSSResponse(ResponseMessage.REVIEW_SAVE_RESPONSE,true, reviewDTO);
+       return new ResponseEntity<> (KSSResponse, HttpStatus.CREATED);
     }
 
     @GetMapping("/admin")
@@ -102,15 +102,15 @@ public class ReviewsController {
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public ResponseEntity<KSSResponse> updateReviewById(@Valid @PathVariable("id") Long id, @RequestBody ReviewUpdateRequest reviewUpdateRequest){
         ReviewDTO reviewDTO=reviewService.updateReviewById(id, reviewUpdateRequest);
-        KSSResponse gpmResponse = new KSSResponse(ResponseMessage.REVIEW_UPDATED_RESPONSE,true,reviewDTO);
-        return ResponseEntity.ok(gpmResponse);
+        KSSResponse KSSResponse = new KSSResponse(ResponseMessage.REVIEW_UPDATED_RESPONSE,true,reviewDTO);
+        return ResponseEntity.ok(KSSResponse);
     }
 
     @DeleteMapping("{id}/admin")
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public ResponseEntity<KSSResponse> deleteReviewById(@PathVariable("id") Long id){
         ReviewDTO reviewDTO = reviewService.deleteReviewById(id);
-        KSSResponse gpmResponse = new KSSResponse(ResponseMessage.REVIEW_DELETE_RESPONSE,true,reviewDTO);
-        return ResponseEntity.ok(gpmResponse);
+        KSSResponse KSSResponse = new KSSResponse(ResponseMessage.REVIEW_DELETE_RESPONSE,true,reviewDTO);
+        return ResponseEntity.ok(KSSResponse);
     }
 }

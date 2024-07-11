@@ -28,20 +28,20 @@ public class ShoppingCartController {
     @PostMapping
     public ResponseEntity <KSSResponse> createCartItem(@RequestHeader("cartUUID") String cartUUID, @RequestBody ShoppingCartRequest shoppingCartRequest) {
             ShoppingCartItemDTO shoppingCartItemDTO = shoppingCartService.createCartItem(cartUUID,shoppingCartRequest);
-        KSSResponse gpmResponse = new KSSResponse(ResponseMessage.ITEM_ADDED_RESPONSE_MESSAGE,true,shoppingCartItemDTO);
-        return new ResponseEntity<>(gpmResponse, HttpStatus.CREATED);
+            KSSResponse KSSResponse = new KSSResponse(ResponseMessage.ITEM_ADDED_RESPONSE_MESSAGE,true,shoppingCartItemDTO);
+        return new ResponseEntity<>(KSSResponse, HttpStatus.CREATED);
     }
 
     @DeleteMapping("{productId}")
-    public ResponseEntity<KSSResponse> deleteCartItem(@RequestHeader("cartUUID") String cartUUID,@PathVariable("productId") Long productId) {
+    public ResponseEntity<KSSResponse> deleteCartItem(@RequestHeader("cartUUID") String cartUUID, @PathVariable("productId") Long productId) {
         ShoppingCartItemDTO shoppingCartItemDTO = shoppingCartService.removeItemById(cartUUID,productId);
-        KSSResponse gpmResponse = new KSSResponse(ResponseMessage.CART_ITEM_DELETED_RESPONSE_MESSAGE, true, shoppingCartItemDTO);
-        return ResponseEntity.ok(gpmResponse);
+        KSSResponse KSSResponse = new KSSResponse(ResponseMessage.CART_ITEM_DELETED_RESPONSE_MESSAGE, true, shoppingCartItemDTO);
+        return ResponseEntity.ok(KSSResponse);
 
     }
 
     @PutMapping("/{op}")
-    public ResponseEntity<ShoppingCartItemDTO> changeQuantity(@RequestHeader("cartUUID") String cartUUID, @RequestBody ShoppingCartUpdateRequest shoppingCartUpdateRequest, @PathVariable String op){
+    public ResponseEntity<ShoppingCartItemDTO> changeQuantity(@RequestHeader("cartUUID") String cartUUID,@RequestBody ShoppingCartUpdateRequest shoppingCartUpdateRequest, @PathVariable String op){
         ShoppingCartItemDTO updatedItem = shoppingCartService.changeQuantity(cartUUID,shoppingCartUpdateRequest, op);
         return ResponseEntity.ok(updatedItem);
     }

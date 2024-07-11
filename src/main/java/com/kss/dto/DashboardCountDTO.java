@@ -12,9 +12,11 @@ import lombok.Setter;
 public class DashboardCountDTO {
 
     private long customerCount;
+    private long brandCount;
     private long categoryCount;
     private long productCount;
     private long orderCount;
+    private long couponCount;
     private long reviewCount;
     private long contactMessageCount;
 }

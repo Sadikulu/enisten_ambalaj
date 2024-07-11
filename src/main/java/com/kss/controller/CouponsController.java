@@ -15,7 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.util.List;
 
@@ -25,7 +24,6 @@ import java.util.List;
 public class CouponsController {
 
     private final CouponsService couponsService;
-
 
     @GetMapping("/{id}/admin")
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
@@ -64,16 +62,16 @@ public class CouponsController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<KSSResponse> createCoupon(@Valid @RequestBody CouponRequest couponRequest){
         CouponDTO couponDTO = couponsService.saveCoupon(couponRequest);
-        KSSResponse gpmResponse = new KSSResponse(ResponseMessage.COUPON_CREATE_RESPONSE, true, couponDTO);
-        return ResponseEntity.ok(gpmResponse);
+        KSSResponse KSSResponse = new KSSResponse(ResponseMessage.COUPON_CREATE_RESPONSE, true, couponDTO);
+        return ResponseEntity.ok(KSSResponse);
     }
 
     @PostMapping("/auth/send")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<KSSResponse> sendCoupon(@Valid @RequestBody CouponMailRequest couponMailRequest){
         couponsService.sendCoupon(couponMailRequest);
-        KSSResponse gpmResponse = new KSSResponse(ResponseMessage.COUPON_MAIL_SENT_RESPONSE, true);
-        return ResponseEntity.ok(gpmResponse);
+        KSSResponse KSSResponse = new KSSResponse(ResponseMessage.COUPON_MAIL_SENT_RESPONSE, true);
+        return ResponseEntity.ok(KSSResponse);
     }
 
     @PutMapping("/{id}/admin")
@@ -81,16 +79,16 @@ public class CouponsController {
     public ResponseEntity<KSSResponse> updateCoupon(@PathVariable Long id,
                                                     @Valid @RequestBody CouponUpdateRequest couponUpdateRequest){
         CouponDTO couponDTO = couponsService.updateCoupon(id, couponUpdateRequest);
-        KSSResponse gpmResponse = new KSSResponse(ResponseMessage.COUPON_UPDATE_RESPONSE, true, couponDTO);
-        return ResponseEntity.ok(gpmResponse);
+        KSSResponse KSSResponse = new KSSResponse(ResponseMessage.COUPON_UPDATE_RESPONSE, true, couponDTO);
+        return ResponseEntity.ok(KSSResponse);
     }
 
     @DeleteMapping("/{id}/admin")
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public ResponseEntity<KSSResponse> deleteCoupon(@PathVariable Long id){
         couponsService.deleteCoupon(id);
-        KSSResponse gpmResponse = new KSSResponse(ResponseMessage.COUPON_DELETE_RESPONSE, true, null);
+        KSSResponse KSSResponse = new KSSResponse(ResponseMessage.COUPON_DELETE_RESPONSE, true, null);
 
-        return ResponseEntity.ok(gpmResponse);
+        return ResponseEntity.ok(KSSResponse);
     }
 }

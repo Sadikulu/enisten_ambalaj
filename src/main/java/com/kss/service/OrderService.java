@@ -1,8 +1,13 @@
 package com.kss.service;
 
 import com.kss.domains.*;
+import com.kss.domains.Order;
+import com.kss.domains.User;
+import com.kss.domains.UserAddress;
 import com.kss.domains.enums.*;
 import com.kss.dto.OrderDTO;
+import com.kss.dto.OrderItemDTO;
+import com.kss.dto.request.OrderItemQuantityUpdateRequest;
 import com.kss.dto.request.OrderRequest;
 import com.kss.dto.request.OrderUpdateProduct;
 import com.kss.dto.request.OrderUpdateRequest;
@@ -15,13 +20,11 @@ import com.kss.repository.*;
 import com.kss.reusableMethods.UniqueIdGenerator;
 import com.kss.service.email.EmailSender;
 import com.kss.service.email.EmailService;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -33,10 +36,7 @@ import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,7 +50,7 @@ public class OrderService {
     private final TransactionRepository transactionRepository;
     private final OrderItemService orderItemService;
     private final OrderItemMapper orderItemMapper;
-    //private final PaymentService paymentService;
+    private final PaymentService paymentService;
     private final ProductService productService;
     private final CouponsService couponsService;
     private final UniqueIdGenerator uniqueIdGenerator;
@@ -61,7 +61,6 @@ public class OrderService {
     private final EmailSender emailSender;
     private final EmailService emailService;
 
-
     public OrderService(OrderMapper orderMapper,
                         OrderRepository orderRepository,
                         @Lazy UserService userService,
@@ -70,7 +69,7 @@ public class OrderService {
                         TransactionRepository transactionRepository,
                         OrderItemService orderItemService,
                         OrderItemMapper orderItemMapper,
-                        //PaymentService paymentService,
+                        PaymentService paymentService,
                         @Lazy ProductService productService,
                         CouponsService couponsService,
                         UniqueIdGenerator uniqueIdGenerator,
@@ -88,7 +87,7 @@ public class OrderService {
         this.userAddressService = userAddressService;
         this.orderItemService = orderItemService;
         this.orderItemMapper = orderItemMapper;
-        //this.paymentService = paymentService;
+        this.paymentService = paymentService;
         this.productService = productService;
         this.couponsService = couponsService;
         this.uniqueIdGenerator = uniqueIdGenerator;
@@ -99,6 +98,7 @@ public class OrderService {
         this.emailSender = emailSender;
         this.emailService = emailService;
     }
+
 
     public PageImpl<OrderDTO> getAllOrdersWithPage(String query, List<OrderStatus> status, String date1, String date2, Pageable pageable) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -135,7 +135,32 @@ public class OrderService {
         }
 
 
-        return getOrderDTOS(pageable, cb, criteriaQuery, root, predicates);
+        finalPredicate = cb.and(predicates.toArray(new Predicate[0]));
+
+        criteriaQuery.orderBy(pageable.getSort().stream()
+                .map(order -> {
+                    if (order.isAscending()) {
+                        return cb.asc(root.get(order.getProperty()));
+                    } else {
+                        return cb.desc(root.get(order.getProperty()));
+                    }
+                })
+                .collect(Collectors.toList()));
+
+        criteriaQuery.where(finalPredicate);
+
+        TypedQuery<Order> typedQuery = entityManager.createQuery(criteriaQuery);
+        typedQuery.setFirstResult((int)pageable.getOffset());
+        typedQuery.setMaxResults(pageable.getPageSize());
+
+        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        countQuery.select(cb.count(countQuery.from(Order.class)));
+        countQuery.where(finalPredicate);
+        Long totalRecords = entityManager.createQuery(countQuery).getSingleResult();
+
+        List<OrderDTO> orderDTOList = orderMapper.map(typedQuery.getResultList());
+
+        return new PageImpl<>(orderDTOList,pageable,totalRecords);
     }
 
 
@@ -199,12 +224,6 @@ public class OrderService {
             predicates.add(root.get("status").in(status));
         }
 
-        return getOrderDTOS(pageable, cb, criteriaQuery, root, predicates);
-    }
-
-    @NotNull
-    private PageImpl<OrderDTO> getOrderDTOS(Pageable pageable, CriteriaBuilder cb, CriteriaQuery<Order> criteriaQuery, Root<Order> root, List<Predicate> predicates) {
-        Predicate finalPredicate;
         finalPredicate = cb.and(predicates.toArray(new Predicate[0]));
 
         criteriaQuery.orderBy(pageable.getSort().stream()
@@ -235,6 +254,8 @@ public class OrderService {
     //getAll***********************************
     public List<Order> getAllOrdersWithPage() {
         return orderRepository.getAllBy();
+
+
     }
 
     //***********************************
@@ -252,7 +273,7 @@ public class OrderService {
         List<ShoppingCartItem> shoppingCartItemList = shoppingCart.getShoppingCartItem();
         DecimalFormat df = new DecimalFormat("#.##");
         Order order = new Order();
-        //Payment payment = new Payment();
+        Payment payment = new Payment();
         Transaction transaction = new Transaction();
         User user = userService.getCurrentUser();
         List<Product> lowStockList = new ArrayList<>();
@@ -345,12 +366,12 @@ public class OrderService {
         transaction.setTransaction(TransactionStatus.CREATED);
         user.getTransactions().add(transaction);
         user.getOrders().add(order);
-//        payment.setAmount(grandTotal+shippingCost);
-//        payment.setProvider(provider[(int)(Math.random()*shippingCompany.length)]);
-//        payment.setStatus(PaymentStatus.COMPLETED);
+        payment.setAmount(grandTotal+shippingCost);
+        payment.setProvider(provider[(int)(Math.random()*shippingCompany.length)]);
+        payment.setStatus(PaymentStatus.COMPLETED);
         transactionRepository.save(transaction);
         userService.save(user);
-//        paymentService.save(payment);
+        paymentService.save(payment);
 
 
 
@@ -368,11 +389,11 @@ public class OrderService {
         order.setUser(user);
         order.setShippingDetails(shippingCompany[(int)(Math.random()*shippingCompany.length)] + " : "+ randomNumber);
         order.getTransaction().add(transaction);
-//        order.getPayments().add(payment);
+        order.getPayments().add(payment);
         if (orderCoupon!=null){
             order.getOrderCoupons().add(orderCoupon);
         }
-        orderRepository.save(order);
+          orderRepository.save(order);
 
         for (User each:managerList) {
             emailSender.send(
@@ -385,7 +406,7 @@ public class OrderService {
                 emailService.buildOrderMail(order)
         );
 
-        if(!lowStockList.isEmpty()){
+        if(lowStockList.size()>0){
             for (User managers:managerList) {
                 emailSender.send(
                         managers.getEmail(),
@@ -453,17 +474,17 @@ public class OrderService {
             transaction.setTransaction(TransactionStatus.COMPLETED);
         }else if (status.equals(OrderStatus.RETURNED) || status.equals(OrderStatus.CANCELED)) {
             transaction.setTransaction(TransactionStatus.CANCELED);
-//            OrderCoupon orderCoupon = orderCouponRepository.findByOrderIdAndUserId(orderId,user.getId());
-//            orderCouponRepository.delete(orderCoupon);
-//            orderCoupon.getCoupons().setLife(orderCoupon.getCoupons().getLife()+1);
-//            Payment payment = new Payment();
-//            payment.setStatus(PaymentStatus.REFUNDED);
-//            payment.setAmount(order.getGrandTotal());
-//            payment.setProvider(order.getPayments().get(order.getPayments().size()-1).getProvider());
+            OrderCoupon orderCoupon = orderCouponRepository.findByOrderIdAndUserId(orderId,user.getId());
+            orderCouponRepository.delete(orderCoupon);
+            orderCoupon.getCoupons().setLife(orderCoupon.getCoupons().getLife()+1);
+            Payment payment = new Payment();
+            payment.setStatus(PaymentStatus.REFUNDED);
+            payment.setAmount(order.getGrandTotal());
+            payment.setProvider(order.getPayments().get(order.getPayments().size()-1).getProvider());
             for (OrderItem each:order.getOrderItems()) {
                 each.getProduct().setStockAmount(each.getProduct().getStockAmount()+ each.getQuantity());
             }
-            //paymentService.save(payment);
+            paymentService.save(payment);
             orderRepository.save(order);
         }
 
@@ -485,7 +506,7 @@ public class OrderService {
         Transaction transaction = new Transaction();
         transaction.setTransaction(TransactionStatus.UPDATED);
         transactionRepository.save(transaction);
-        //OrderCoupon orderCoupon = orderCouponRepository.findByOrderId(orderUpdateRequest.getOrderId());
+        OrderCoupon orderCoupon = orderCouponRepository.findByOrderId(orderUpdateRequest.getOrderId());
 
         if (!(order.getStatus().equals(OrderStatus.PENDING) || order.getStatus().equals(OrderStatus.BEING_SUPPLIED)
                 || order.getStatus().equals(OrderStatus.READY_TO_SHIP))){
@@ -560,27 +581,27 @@ public class OrderService {
         order.setTax(Double.parseDouble(df.format(newTaxPrice).replaceAll(",",".")));
         order.setStatus(OrderStatus.PENDING);
         order.getTransaction().add(transaction);
-        //Payment oldPayment = order.getPayments().get(order.getPayments().size()-1);
+        Payment oldPayment = order.getPayments().get(order.getPayments().size()-1);
 
-        //double updatedOrderGrandTotal = Double.parseDouble(df.format(grandTotalCalculator(newOrderListSubTotal,newDiscountedPrice,newTaxPrice,orderCoupon)).replaceAll(",","."));
-        //double updatedShippingCost = calculateShippingCost(updatedOrderGrandTotal);
+        double updatedOrderGrandTotal = Double.parseDouble(df.format(grandTotalCalculator(newOrderListSubTotal,newDiscountedPrice,newTaxPrice,orderCoupon)).replaceAll(",","."));
+        double updatedShippingCost = calculateShippingCost(updatedOrderGrandTotal);
 
-        //Payment payment = new Payment();
-//        if (oldGrandTotal > updatedOrderGrandTotal){
-//            payment.setStatus(PaymentStatus.REFUNDED);
-//            payment.setAmount(oldGrandTotal-(updatedOrderGrandTotal+updatedShippingCost));
-//        }else if(updatedOrderGrandTotal > oldGrandTotal){
-//            payment.setStatus(PaymentStatus.COMPLETED);
-//            payment.setAmount((updatedOrderGrandTotal+updatedShippingCost)-oldGrandTotal);
-//        }
+        Payment payment = new Payment();
+        if (oldGrandTotal > updatedOrderGrandTotal){
+            payment.setStatus(PaymentStatus.REFUNDED);
+            payment.setAmount(oldGrandTotal-(updatedOrderGrandTotal+updatedShippingCost));
+        }else if(updatedOrderGrandTotal > oldGrandTotal){
+            payment.setStatus(PaymentStatus.COMPLETED);
+            payment.setAmount((updatedOrderGrandTotal+updatedShippingCost)-oldGrandTotal);
+        }
 
-        //order.setGrandTotal(updatedOrderGrandTotal+updatedShippingCost);
+        order.setGrandTotal(updatedOrderGrandTotal+updatedShippingCost);
         order.setDiscount(Double.parseDouble(df.format(newDiscountedPrice).replaceAll(",",".")));
-        //order.setShippingCost(updatedShippingCost);
-//        payment.setProvider(oldPayment.getProvider());
-//        paymentService.save(payment);
+        order.setShippingCost(updatedShippingCost);
+        payment.setProvider(oldPayment.getProvider());
+        paymentService.save(payment);
         order.setSubTotal(Double.parseDouble(df.format(newOrderListSubTotal).replaceAll(",",".")));
-        //order.getPayments().add(payment);
+        order.getPayments().add(payment);
         order.setUpdateAt(LocalDateTime.now());
         orderRepository.save(order);
         user.getTransactions().add(transaction);

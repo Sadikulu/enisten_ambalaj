@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.validation.constraints.*;
 import java.util.Set;
 
@@ -22,7 +21,6 @@ public class ProductUpdateRequest {
     @NotBlank
     @Size(max = 500, message = "The short description you have entered '${validatedValue}' must be {max} character long")
     private String shortDesc;
-
     @NotBlank
     @Size(max = 3500, message = "The long description you have entered '${validatedValue}' must be {max} character long" )
     private String longDesc;
@@ -56,5 +54,7 @@ public class ProductUpdateRequest {
     private Double height;
 
     private Long categoryId;
+
+    private Long brandId;
 
 }

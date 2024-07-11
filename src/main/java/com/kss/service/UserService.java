@@ -1,6 +1,5 @@
 package com.kss.service;
 
-
 import com.kss.domains.*;
 import com.kss.domains.enums.RoleType;
 import com.kss.domains.enums.UserStatus;
@@ -19,8 +18,9 @@ import com.kss.mapper.UserMapper;
 import com.kss.repository.ShoppingCartItemRepository;
 import com.kss.repository.ShoppingCartRepository;
 import com.kss.repository.UserRepository;
-import com.kss.security.JwtUtils;
+import com.kss.reusableMethods.DiscountCalculator;
 import com.kss.security.SecurityUtils;
+import com.kss.security.jwt.JwtUtils;
 import com.kss.service.email.EmailSender;
 import com.kss.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
@@ -57,6 +56,7 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final EntityManager entityManager;
     private final JwtUtils jwtUtils;
+    private final DiscountCalculator discountCalculator;
     private final EmailSender emailSender;
     private final EmailService emailService;
     private final ShoppingCartRepository shoppingCartRepository;
@@ -98,13 +98,14 @@ public class UserService {
         String encodedPassword =  passwordEncoder.encode(registerRequest.getPassword());
         if(userRepository.existsByEmail(registerRequest.getEmail())) {
             user =getUserByEmail(registerRequest.getEmail());
-            if(user.getStatus()!= UserStatus.ANONYMOUS) {
+            if(user.getStatus()!=UserStatus.ANONYMOUS) {
                 throw new ConflictException(String.format(ErrorMessage.EMAIL_ALREADY_EXIST_MESSAGE,
                         registerRequest.getEmail()));
             }else{
                 user.setFirstName(registerRequest.getFirstName());
                 user.setLastName(registerRequest.getLastName());
                 user.setEmail(registerRequest.getEmail());
+                user.setBirthDate(registerRequest.getBirthDate());
                 user.setPhone(registerRequest.getPhone());
                 user.setStatus(UserStatus.PENDING);
                 user.setPassword(encodedPassword);
@@ -115,12 +116,14 @@ public class UserService {
             user.setFirstName(registerRequest.getFirstName());
             user.setLastName(registerRequest.getLastName());
             user.setEmail(registerRequest.getEmail());
+            user.setBirthDate(registerRequest.getBirthDate());
             user.setPassword(encodedPassword);
             user.setPhone(registerRequest.getPhone());
             user.setRoles(roles);
             user.setStatus(UserStatus.PENDING);
             userRepository.save(user);
         }
+
 
         String token = UUID.randomUUID().toString();
         ConfirmationToken confirmationToken = new ConfirmationToken(token, LocalDateTime.now(),LocalDateTime.now().plusDays(1),user);
@@ -147,12 +150,16 @@ public class UserService {
         }
         confirmationTokenService.setConfirmedAt(token);
         User user = getUserByEmail(confirmationToken.getUser().getEmail());
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.setCartUUID(UUID.randomUUID().toString());
+        shoppingCartRepository.save(shoppingCart);
+        user.setShoppingCart(shoppingCart);
         activateUser(user.getEmail());
         return userMapper.userToUserDTO(user);
     }
 
     @Transactional
-    public String confirmResetToken(String token, PasswordResetRequest passwordResetRequest) {
+    public String confirmResetToken(String token,PasswordResetRequest passwordResetRequest) {
         PasswordResetToken passwordResetToken = passwordResetService
                 .getToken(token)
                 .orElseThrow(() ->
@@ -189,6 +196,7 @@ public class UserService {
         user.setFirstName(userUpdateRequest.getFirstName());
         user.setLastName(userUpdateRequest.getLastName());
         user.setPhone(userUpdateRequest.getPhone());
+        user.setBirthDate(userUpdateRequest.getBirthDate());
         user.setUpdateAt(LocalDateTime.now());
         userRepository.save(user);
         return userMapper.userToUserDTO(user);
@@ -223,7 +231,10 @@ public class UserService {
         }
         user.setStatus(UserStatus.ANONYMOUS);
         user.setPassword("");
+        Long shoppingCartId=user.getShoppingCart().getId();
+        user.setShoppingCart(null);
         userRepository.save(user);
+        shoppingCartRepository.deleteById(shoppingCartId);
         userRepository.delete(user);
         return userMapper.userToUserDeleteDTO(user);
     }
@@ -261,18 +272,25 @@ public class UserService {
         }
         if (anniversary){
             LocalDateTime currentDate = LocalDateTime.now();
+
             LocalDateTime yearAgo = currentDate.minusYears(1);
+
+
             int currentMonth = currentDate.getMonthValue();
             int currentDay = currentDate.getDayOfMonth();
             int oneYearAgo = yearAgo.getYear();
+
 
             Expression<Integer> registrationMonth = cb.function("month", Integer.class, root.get("createAt"));
             Expression<Integer> registrationDay = cb.function("day", Integer.class, root.get("createAt"));
             Expression<Integer> registrationYear = cb.function("year", Integer.class, root.get("createAt"));
 
+
             Predicate matchMonth = cb.equal(registrationMonth, currentMonth);
             Predicate matchDay = cb.equal(registrationDay, currentDay);
             Predicate registrationBeforeOneYearAgo = cb.lessThanOrEqualTo(registrationYear, oneYearAgo);
+
+
             predicates.add(cb.and(matchMonth, matchDay, registrationBeforeOneYearAgo));
         }
         Predicate finalPredicate = cb.and(predicates.toArray(new Predicate[0]));
@@ -285,60 +303,60 @@ public class UserService {
         return userMapper.map(typedQuery.getResultList());
     }
 
-    public PageImpl<UserDTO> getAllUserPage(String query,RoleType role,Pageable pageable) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<User> criteriaQuery = cb.createQuery(User.class);
-        Root<User> root = criteriaQuery.from(User.class);
-        root.alias("generatedAlias0");
-        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-        Root<User> countRoot = countQuery.from(User.class);
+        public PageImpl<UserDTO> getAllUserPage(String query,RoleType role,Pageable pageable) {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<User> criteriaQuery = cb.createQuery(User.class);
+            Root<User> root = criteriaQuery.from(User.class);
+            root.alias("generatedAlias0");
+            CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+            Root<User> countRoot = countQuery.from(User.class);
 
 
-        List<Predicate> predicates = new ArrayList<>();
+            List<Predicate> predicates = new ArrayList<>();
 
-        if (query != null && !query.isEmpty()) {
-            String likeSearchText = "%" + query.toLowerCase(Locale.US) + "%";
-            Predicate searchByUserFirstName = cb.like(cb.lower(root.get("firstName")), likeSearchText);
-            Predicate searchByUserLastName = cb.like(cb.lower(root.get("lastName")), likeSearchText);
-            Predicate searchByUserEmail = cb.like(cb.lower(root.get("email")), likeSearchText);
-            predicates.add(cb.or(searchByUserFirstName,searchByUserLastName,searchByUserEmail));
-        }
-        if (role != null){
-            Join<User, Role> joinRoles = root.join("roles");
-            Join<User, Role> countRoles = countRoot.join("roles");
-            joinRoles.alias("generatedAlias1");
-            predicates.add(cb.equal(joinRoles.get("roleName"), role));
-        }
+            if (query != null && !query.isEmpty()) {
+                String likeSearchText = "%" + query.toLowerCase(Locale.US) + "%";
+                Predicate searchByUserFirstName = cb.like(cb.lower(root.get("firstName")), likeSearchText);
+                Predicate searchByUserLastName = cb.like(cb.lower(root.get("lastName")), likeSearchText);
+                Predicate searchByUserEmail = cb.like(cb.lower(root.get("email")), likeSearchText);
+                predicates.add(cb.or(searchByUserFirstName,searchByUserLastName,searchByUserEmail));
+            }
+            if (role != null){
+                Join<User, Role> joinRoles = root.join("roles");
+                Join<User, Role> countRoles = countRoot.join("roles");
+                joinRoles.alias("generatedAlias1");
+                predicates.add(cb.equal(joinRoles.get("roleName"), role));
+            }
 
-        Predicate finalPredicate = cb.and(predicates.toArray(new Predicate[0]));
+            Predicate finalPredicate = cb.and(predicates.toArray(new Predicate[0]));
 
-        criteriaQuery.orderBy(pageable.getSort().stream()
-                .map(order -> {
-                    if (order.isAscending()) {
-                        return cb.asc(root.get(order.getProperty()));
-                    } else {
-                        return cb.desc(root.get(order.getProperty()));
-                    }
-                })
-                .collect(Collectors.toList()));
+            criteriaQuery.orderBy(pageable.getSort().stream()
+                    .map(order -> {
+                        if (order.isAscending()) {
+                            return cb.asc(root.get(order.getProperty()));
+                        } else {
+                            return cb.desc(root.get(order.getProperty()));
+                        }
+                    })
+                    .collect(Collectors.toList()));
 
-        criteriaQuery.select(root);
-        criteriaQuery.where(finalPredicate);
-
-
-        countQuery.select(cb.count(countRoot));
-        countQuery.where(finalPredicate);
-        Long totalRecords = entityManager.createQuery(countQuery).getSingleResult();
+            criteriaQuery.select(root);
+            criteriaQuery.where(finalPredicate);
 
 
-        TypedQuery<User> typedQuery = entityManager.createQuery(criteriaQuery);
-        typedQuery.setFirstResult((int)pageable.getOffset());
-        typedQuery.setMaxResults(pageable.getPageSize());
+            countQuery.select(cb.count(countRoot));
+            countQuery.where(finalPredicate);
+            Long totalRecords = entityManager.createQuery(countQuery).getSingleResult();
 
 
-        List<UserDTO> userDTOList = userMapper.map(typedQuery.getResultList());
+            TypedQuery<User> typedQuery = entityManager.createQuery(criteriaQuery);
+            typedQuery.setFirstResult((int)pageable.getOffset());
+            typedQuery.setMaxResults(pageable.getPageSize());
 
-        return new PageImpl<>(userDTOList, pageable, totalRecords);
+
+            List<UserDTO> userDTOList = userMapper.map(typedQuery.getResultList());
+
+            return new PageImpl<>(userDTOList, pageable, totalRecords);
     }
 
     public UserDTO getUserById(Long id) {
@@ -430,15 +448,18 @@ public class UserService {
         userRepository.enableUser(status, email);
     }
 
-    public LoginResponse loginUser(String cartUUID, LoginRequest loginRequest) {
+    public LoginResponse loginUser(//String cartUUID,
+                                   LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
         Authentication authentication  =  authenticationManager.
                 authenticate(usernamePasswordAuthenticationToken);
         UserDetails userDetails  =  (UserDetails) authentication.getPrincipal() ;
         User user = getUserByEmail(userDetails.getUsername());
-        ShoppingCart anonymousCart = shoppingCartRepository.findByCartUUID(cartUUID).orElseThrow(()->
-                new ResourceNotFoundException(String.format(ErrorMessage.RESOURCE_NOT_FOUND_MESSAGE,cartUUID)));
+//        ShoppingCart anonymousCart = shoppingCartRepository.findByCartUUID(cartUUID).orElseThrow(()->
+//                new ResourceNotFoundException(String.format(ErrorMessage.RESOURCE_NOT_FOUND_MESSAGE,cartUUID)));
+        ShoppingCart anonymousCart = shoppingCartRepository.findByCartUUID(user.getShoppingCart().getCartUUID()).orElseThrow(()->
+                new ResourceNotFoundException(String.format(ErrorMessage.RESOURCE_NOT_FOUND_MESSAGE,user.getShoppingCart().getCartUUID())));
         ShoppingCart userCart = user.getShoppingCart();
         if (!anonymousCart.getShoppingCartItem().isEmpty()){
             if (userCart.getShoppingCartItem().isEmpty()) {
@@ -484,8 +505,8 @@ public class UserService {
                 }
             }
         }
-        shoppingCartRepository.save(userCart);
-        shoppingCartRepository.delete(anonymousCart);
+            shoppingCartRepository.save(userCart);
+            shoppingCartRepository.delete(anonymousCart);
 
 
 

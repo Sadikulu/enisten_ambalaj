@@ -1,20 +1,19 @@
 package com.kss.controller;
 
+import javax.validation.Valid;
 import com.kss.dto.UserDTO;
 import com.kss.dto.request.ForgotPasswordRequest;
-import com.kss.dto.request.LoginRequest;
 import com.kss.dto.request.PasswordResetRequest;
-import com.kss.dto.request.RegisterRequest;
-import com.kss.dto.response.KSSResponse;
-import com.kss.dto.response.LoginResponse;
-import com.kss.dto.response.ResponseMessage;
-import com.kss.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import com.kss.dto.request.LoginRequest;
+import com.kss.dto.request.RegisterRequest;
+import com.kss.dto.response.LoginResponse;
+import com.kss.dto.response.ResponseMessage;
+import com.kss.dto.response.KSSResponse;
+import com.kss.service.UserService;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,8 +36,10 @@ public class UserJwtController {
 
     // login
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> authenticate(@RequestHeader(value = "cartUUID",required = false)String cartUUID, @Valid @RequestBody LoginRequest loginRequest)  {
-        LoginResponse response = userService.loginUser(cartUUID,loginRequest);
+    public ResponseEntity<LoginResponse> authenticate(//@RequestHeader(value = "cartUUID",required = false)String cartUUID,
+                                                      @Valid @RequestBody LoginRequest loginRequest)  {
+        LoginResponse response = userService.loginUser(//cartUUID,
+                loginRequest);
         return new ResponseEntity<>(response,HttpStatus.OK);
 
     }
@@ -57,22 +58,5 @@ public class UserJwtController {
         return ResponseEntity.ok(response);
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

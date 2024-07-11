@@ -1,12 +1,15 @@
 package com.kss.dto;
 
-import com.kss.domains.Role;
+import com.kss.domains.*;
+import com.kss.domains.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -23,12 +26,18 @@ public class UserDTO {
 
     private String phone;
 
+    private LocalDate birthDate;
+
     private String email;
-
+    private UserStatus status;
     private boolean builtIn;
+    private LocalDateTime createAt;
 
+    private LocalDateTime updateAt;
 
     private Set<String> roles;
+
+    private List<FavoriteProductDTO> favoriteList;
 
 
     public void setRoles(Set<Role> roles) {

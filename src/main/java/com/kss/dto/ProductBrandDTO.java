@@ -1,4 +1,4 @@
-package com.kss.dto.request;
+package com.kss.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductPriceUpdateRequest {
+public class ProductBrandDTO {
 
-    private Double price;
+    private Long id;
+    private String name;
 }

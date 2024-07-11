@@ -7,6 +7,8 @@ import com.kss.dto.ShoppingCartDTO;
 import com.kss.dto.ShoppingCartItemDTO;
 import com.kss.dto.request.ShoppingCartRequest;
 import com.kss.dto.request.ShoppingCartUpdateRequest;
+import com.kss.dto.response.KSSResponse;
+import com.kss.dto.response.ResponseMessage;
 import com.kss.exception.BadRequestException;
 import com.kss.exception.ResourceNotFoundException;
 import com.kss.exception.message.ErrorMessage;
@@ -16,11 +18,9 @@ import com.kss.repository.ShoppingCartItemRepository;
 import com.kss.repository.ShoppingCartRepository;
 import com.kss.reusableMethods.DiscountCalculator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -44,7 +44,7 @@ public class ShoppingCartService {
                 new ResourceNotFoundException(String.format(ErrorMessage.RESOURCE_NOT_FOUND_MESSAGE,cartUUID)));
     }
 
-    public ShoppingCartItemDTO createCartItem(String cartUUID, ShoppingCartRequest shoppingCartRequest) {
+    public ShoppingCartItemDTO createCartItem(String cartUUID,ShoppingCartRequest shoppingCartRequest) {
 
         ShoppingCart shoppingCart = findShoppingCartByUUID(cartUUID);
 
@@ -56,7 +56,7 @@ public class ShoppingCartService {
         if (shoppingCartRequest.getQuantity() > product.getStockAmount()){
             throw new BadRequestException(String.format(ErrorMessage.PRODUCT_OUT_OF_STOCK_MESSAGE,product.getId()));
         }
-        if (!shoppingCart.getShoppingCartItem().isEmpty() && shoppingCart.getShoppingCartItem().contains(foundItem)) {
+        if (shoppingCart.getShoppingCartItem().size()>0 && shoppingCart.getShoppingCartItem().contains(foundItem)) {
             if (shoppingCartRequest.getQuantity() > foundItem.getProduct().getStockAmount()){
                 throw new BadRequestException(String.format(ErrorMessage.PRODUCT_OUT_OF_STOCK_MESSAGE,product.getId()));
             }
@@ -84,6 +84,9 @@ public class ShoppingCartService {
         return shoppingCartItemMapper.shoppingCartItemToShoppingCartItemDTO(shoppingCartItem);
     }
 
+
+
+
     public ShoppingCartItemDTO removeItemById(String cartUUID,Long productId) {
         ShoppingCart shoppingCart = shoppingCartRepository.findByCartUUID(cartUUID).orElseThrow(()->
                 new ResourceNotFoundException(ErrorMessage.RESOURCE_NOT_FOUND_MESSAGE));
@@ -101,7 +104,7 @@ public class ShoppingCartService {
         shoppingCart.setGrandTotal(0.0);
     }
 
-    public ShoppingCartItemDTO changeQuantity(String cartUUID, ShoppingCartUpdateRequest shoppingCartUpdateRequest, String op) {
+    public ShoppingCartItemDTO changeQuantity(String cartUUID,ShoppingCartUpdateRequest shoppingCartUpdateRequest, String op) {
         ShoppingCart shoppingCart = shoppingCartRepository.findByCartUUID(cartUUID).orElseThrow(()->
                 new ResourceNotFoundException(ErrorMessage.RESOURCE_NOT_FOUND_MESSAGE));
         Product product = productService.findProductById(shoppingCartUpdateRequest.getProductId());

@@ -1,14 +1,12 @@
 package com.kss.dto.request;
 
-import com.kss.domains.enums.CouponsType;
 import com.kss.domains.enums.CouponsStatus;
+import com.kss.domains.enums.CouponsType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.validation.constraints.NotNull;
-
 
 @Getter
 @Setter

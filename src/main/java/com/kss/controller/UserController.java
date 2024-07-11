@@ -1,5 +1,6 @@
 package com.kss.controller;
 
+
 import com.kss.domains.enums.RoleType;
 import com.kss.dto.FavoriteProductDTO;
 import com.kss.dto.UserDTO;
@@ -11,15 +12,11 @@ import com.kss.dto.response.KSSResponse;
 import com.kss.dto.response.ResponseMessage;
 import com.kss.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.util.List;
 
@@ -80,7 +77,7 @@ public class UserController {
     @GetMapping("/pages")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public ResponseEntity<PageImpl<UserDTO>> getAllUsersByPage(@RequestParam(value = "q",required = false)String query,
-                                                               @RequestParam(value = "role",required = false) RoleType role,
+                                                               @RequestParam(value = "role",required = false)RoleType role,
                                                                @RequestParam("page") int page,
                                                                @RequestParam("size") int size, @RequestParam("sort") String prop,
                                                                @RequestParam(value = "direction", required = false, defaultValue = "DESC") Direction direction) {
@@ -110,7 +107,7 @@ public class UserController {
     @PutMapping("/{id}/admin")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public ResponseEntity<KSSResponse> updateUserAuth(@PathVariable("id") Long id,
-                                                     @Valid @RequestBody AdminUserUpdateRequest adminUserUpdateRequest) {
+                                                      @Valid @RequestBody AdminUserUpdateRequest adminUserUpdateRequest) {
         UserDTO userDTO= userService.updateUserAuth(id,adminUserUpdateRequest);
         KSSResponse response = new KSSResponse(ResponseMessage.USER_UPDATE_RESPONSE_MESSAGE, true,userDTO);
         return ResponseEntity.ok(response);

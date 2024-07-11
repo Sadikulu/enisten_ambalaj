@@ -10,7 +10,6 @@ import com.kss.dto.request.OrderRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Set;
@@ -37,7 +36,7 @@ public interface OrderMapper {
         return user.getFirstName() + " " +user.getLastName();
     }
 
-    public default Double getCouponDiscount(Set<OrderCoupon> orderCoupon, double subTotal, double discount, double tax){
+    public default Double getCouponDiscount(Set<OrderCoupon> orderCoupon,double subTotal, double discount, double tax){
         double orderDiscount = 0.0;
         DecimalFormat df = new DecimalFormat("#.##");
         if (orderCoupon.size()>0){

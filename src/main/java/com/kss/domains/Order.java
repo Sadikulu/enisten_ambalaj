@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
 @Table(name = "t_orders")
 @Entity
 public class Order {
@@ -74,9 +72,9 @@ public class Order {
     @OneToMany(mappedBy = "order",orphanRemoval = true)
     private Set<OrderCoupon> orderCoupons = new HashSet<>();
 
-//    @OneToMany(orphanRemoval = true)
-//    @JoinColumn(name = "order_id")
-//    private List<Payment> payments = new ArrayList<>();
+    @OneToMany(orphanRemoval = true)
+    @JoinColumn(name = "order_id")
+    private List<Payment> payments = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id")

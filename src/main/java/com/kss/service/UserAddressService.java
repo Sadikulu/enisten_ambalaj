@@ -2,17 +2,18 @@ package com.kss.service;
 
 import com.kss.domains.User;
 import com.kss.domains.UserAddress;
+import com.kss.domains.enums.UserStatus;
 import com.kss.dto.UserAddressDTO;
 import com.kss.dto.request.UserAddressRequest;
 import com.kss.dto.request.UserAddressUpdate;
 import com.kss.exception.BadRequestException;
+import com.kss.exception.ConflictException;
 import com.kss.exception.ResourceNotFoundException;
 import com.kss.exception.message.ErrorMessage;
 import com.kss.mapper.UserAddressMapper;
 import com.kss.repository.UserAddressRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service

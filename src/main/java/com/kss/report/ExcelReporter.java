@@ -1,16 +1,12 @@
 package com.kss.report;
 
-import com.kss.domains.Category;
-import com.kss.domains.Order;
-import com.kss.domains.Product;
-import com.kss.domains.User;
+import com.kss.domains.*;
 import com.kss.dto.MostPopularProduct;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,7 +16,6 @@ import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
-
 
 public class ExcelReporter {
 
@@ -40,10 +35,11 @@ public class ExcelReporter {
 
     static String SHEET_STOCK_ALARM_PRODUCTS = "StockAlarmProducts";
     static String[] STOCK_ALARM_HEADERS = {"Id", "Title", "Price", "Category", "Stock Amount", "Stock Limit"};
+
     static String SHEET_UNORDERED_PRODUCTS = "StockAlarmProducts";
     static String[] UNORDERED_PRODUCTS_HEADERS = {"Id", "Title", "Price", "Category"};
 
-    public static ByteArrayInputStream getExcelReport(List<Category> categories, List<Product> products, List<Order> orders, List<User> users) throws IOException {
+    public static ByteArrayInputStream getExcelReport(List<Category> categories, List<Brand> brands, List<Product> products, List<Order> orders, List<User> users, List<Coupons> coupons) throws IOException {
         Workbook workbook = new XSSFWorkbook();
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -60,9 +56,12 @@ public class ExcelReporter {
 
         Row row = sheet.createRow(1);
         row.createCell(0).setCellValue(categories.stream().map(t -> t.getTitle()).distinct().count());
+        row.createCell(1).setCellValue(brands.stream().map(t -> t.getName()).distinct().count());
         row.createCell(2).setCellValue(products.stream().map(t -> t.getId()).count());
         row.createCell(3).setCellValue(orders.stream().map(t -> t.getCreateAt()).filter(t -> t.isEqual(LocalDateTime.now())).count());
         row.createCell(4).setCellValue(users.stream().map(t -> t.getRoles()).filter(t -> t.equals("Customer")).count());
+        row.createCell(5).setCellValue(coupons.stream().map(t -> t.getCode()).count());
+
 
         workbook.write(out);
         workbook.close();

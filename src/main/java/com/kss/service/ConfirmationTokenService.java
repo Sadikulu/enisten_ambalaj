@@ -4,7 +4,6 @@ import com.kss.domains.ConfirmationToken;
 import com.kss.repository.ConfirmationTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
 

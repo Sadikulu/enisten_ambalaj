@@ -1,12 +1,8 @@
 package com.kss.dto;
 
-import com.kss.domains.enums.CouponsType;
 import com.kss.domains.enums.CouponsStatus;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import com.kss.domains.enums.CouponsType;
+import lombok.*;
 import java.time.LocalDateTime;
 
 @Getter

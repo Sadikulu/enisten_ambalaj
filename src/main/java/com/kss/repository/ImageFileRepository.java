@@ -4,7 +4,6 @@ import com.kss.domains.ImageFile;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +14,8 @@ public interface ImageFileRepository extends JpaRepository<ImageFile, String> {
 
     @EntityGraph(attributePaths = "id")
     Optional<ImageFile> findImageById(String Id) ;
+
+
 
     boolean existsByName(String name);
 }

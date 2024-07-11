@@ -1,5 +1,6 @@
 package com.kss.dto;
 
+import com.kss.domains.enums.CouponsType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

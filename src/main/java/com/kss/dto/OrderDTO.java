@@ -1,11 +1,12 @@
 package com.kss.dto;
 
+import com.kss.domains.User;
+import com.kss.domains.UserAddress;
 import com.kss.domains.enums.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 import java.util.List;
 

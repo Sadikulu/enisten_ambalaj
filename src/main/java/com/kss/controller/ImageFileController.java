@@ -2,8 +2,8 @@ package com.kss.controller;
 
 import com.kss.domains.ImageFile;
 import com.kss.dto.ImageFileDTO;
-import com.kss.dto.response.ImageSavedResponse;
 import com.kss.dto.response.KSSResponse;
+import com.kss.dto.response.ImageSavedResponse;
 import com.kss.dto.response.ResponseMessage;
 import com.kss.service.ImageFileService;
 import lombok.AllArgsConstructor;
@@ -31,7 +31,7 @@ public class ImageFileController {
     public ResponseEntity<ImageSavedResponse> uploadFile(@RequestParam("image") MultipartFile[] image){
        Set<String> images = imageFileService.saveImage(image);
        ImageSavedResponse response=new ImageSavedResponse
-               (images, ResponseMessage.IMAGE_SAVED_RESPONSE_MESSAGE,true);
+               (images,ResponseMessage.IMAGE_SAVED_RESPONSE_MESSAGE,true);
        return ResponseEntity.ok(response);
     }
 

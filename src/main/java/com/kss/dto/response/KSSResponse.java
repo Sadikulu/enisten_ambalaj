@@ -1,6 +1,5 @@
 package com.kss.dto.response;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +9,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class KSSResponse {
     private String message;
     private Boolean success;
@@ -19,6 +17,5 @@ public class KSSResponse {
     public KSSResponse(String message, boolean success) {
         this.message=message;
         this.success=success;
-
     }
 }

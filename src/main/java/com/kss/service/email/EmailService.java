@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.time.format.DateTimeFormatter;
@@ -1471,7 +1470,7 @@ public class EmailService implements EmailSender{
                 "    </div>";
     }
 
-    public String buildCouponMail(String name, Coupons coupon, String message) {
+    public String buildCouponMail(String name, Coupons coupon,String message) {
         String discount = null;
         if (coupon.getType().equals(CouponsType.EXACT_AMOUNT)){
             discount = coupon.getAmount().toString() + "$";

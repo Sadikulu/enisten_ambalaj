@@ -5,7 +5,6 @@ import com.kss.dto.ContactMessageDTO;
 import com.kss.dto.request.ContactMessageRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-
 import java.util.List;
 
 @Mapper(componentModel = "spring")

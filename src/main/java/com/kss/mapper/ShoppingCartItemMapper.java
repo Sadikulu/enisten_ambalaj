@@ -4,10 +4,10 @@ import com.kss.domains.ImageFile;
 import com.kss.domains.Product;
 import com.kss.domains.ShoppingCartItem;
 import com.kss.dto.ShoppingCartItemDTO;
+import com.kss.dto.ShowcaseImageDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-
 import java.util.List;
 
 @Mapper(componentModel = "spring")

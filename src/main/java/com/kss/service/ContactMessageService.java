@@ -3,6 +3,7 @@ package com.kss.service;
 import com.kss.domains.ContactMessage;
 import com.kss.dto.ContactMessageDTO;
 import com.kss.dto.request.ContactMessageRequest;
+import com.kss.exception.BadRequestException;
 import com.kss.exception.ResourceNotFoundException;
 import com.kss.exception.message.ErrorMessage;
 import com.kss.mapper.ContactMessageMapper;
@@ -11,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -67,6 +67,7 @@ public class ContactMessageService {
     public ContactMessage findMessageById(Long id) {
         return contactMessageRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException(String.format(ErrorMessage.RESOURCE_NOT_FOUND_MESSAGE, id)));
+
     }
 
     // **************DELETEMESSAGE******************

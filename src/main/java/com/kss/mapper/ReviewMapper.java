@@ -6,12 +6,10 @@ import com.kss.dto.ReviewDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ReviewMapper {
-
 
    @Mapping(source = "user", target = "userFullName",qualifiedByName = "getUserFullName")
    ReviewDTO reviewToReviewDTO(Review review);

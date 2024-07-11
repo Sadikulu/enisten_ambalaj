@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -12,6 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+
 @Table(name = "t_confirmation_token")
 @Entity
 public class ConfirmationToken {
@@ -24,16 +24,12 @@ public class ConfirmationToken {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "confirmation_token_sequence")
     private Long id;
-
     @Column(nullable = false)
     private String token;
-
     @Column(nullable = false)
     private LocalDateTime createdAt;
-
     @Column(nullable = false)
     private LocalDateTime expiresAt;
-
     private LocalDateTime confirmedAt;
 
     @ManyToOne

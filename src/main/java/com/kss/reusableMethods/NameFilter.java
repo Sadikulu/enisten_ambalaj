@@ -1,7 +1,6 @@
 package com.kss.reusableMethods;
 
 import org.springframework.stereotype.Service;
-
 import java.util.Locale;
 
 @Service

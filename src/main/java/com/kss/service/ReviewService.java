@@ -1,11 +1,7 @@
 package com.kss.service;
 
-import com.kss.domains.Product;
-import com.kss.domains.Review;
-import com.kss.domains.Role;
-import com.kss.domains.User;
-import com.kss.domains.enums.ReviewStatus;
-import com.kss.domains.enums.RoleType;
+import com.kss.domains.*;
+import com.kss.domains.enums.*;
 import com.kss.dto.ReviewDTO;
 import com.kss.dto.request.ReviewRequest;
 import com.kss.dto.request.ReviewUpdateRequest;
@@ -19,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -86,6 +81,8 @@ public class ReviewService {
         if (rate != null && (rate > 0 && rate <= 5)) {
             predicates.add(cb.equal(root.get("rating"),(rate)));
         }
+
+
         try {
             Role role = roleService.findByRoleName(RoleType.ROLE_ADMIN);
             boolean isAdmin = userService.getCurrentUser().getRoles().stream().anyMatch(r->r.equals(role));
@@ -180,6 +177,9 @@ public class ReviewService {
 
         reviewRepository.save(review);
         return reviewMapper.reviewToReviewDTO(review);
+
+
+
     }
 
 

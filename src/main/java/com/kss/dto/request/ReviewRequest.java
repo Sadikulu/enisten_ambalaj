@@ -1,10 +1,11 @@
 package com.kss.dto.request;
 
+import com.kss.domains.Product;
+import com.kss.domains.enums.ReviewStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -26,5 +27,9 @@ public class ReviewRequest {
 
     @NotNull
     private Long productId;
+
+
+
+
 
 }

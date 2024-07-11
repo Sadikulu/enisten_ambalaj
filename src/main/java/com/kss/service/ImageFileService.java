@@ -4,9 +4,9 @@ import com.kss.domains.ImageData;
 import com.kss.domains.ImageFile;
 import com.kss.domains.Product;
 import com.kss.dto.ImageFileDTO;
-import com.kss.exception.ImageFileException;
 import com.kss.exception.ResourceNotFoundException;
 import com.kss.exception.message.ErrorMessage;
+import com.kss.exception.message.ImageFileException;
 import com.kss.repository.ImageFileRepository;
 import com.kss.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;

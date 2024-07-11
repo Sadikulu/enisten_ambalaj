@@ -1,11 +1,11 @@
 package com.kss.dto;
 
+import com.kss.domains.*;
 import com.kss.domains.enums.ProductStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -58,6 +58,8 @@ public class ProductDTO {
     private LocalDateTime createAt;
 
     private LocalDateTime updateAt;
+
+    private ProductBrandDTO brand;
 
     private ProductCategoryDTO category;
 }

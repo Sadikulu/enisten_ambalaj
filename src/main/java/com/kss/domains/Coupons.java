@@ -1,12 +1,11 @@
 package com.kss.domains;
 
-import com.kss.domains.enums.CouponsType;
 import com.kss.domains.enums.CouponsStatus;
+import com.kss.domains.enums.CouponsType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -19,6 +18,7 @@ import java.util.Set;
 @Entity
 @Table(name="t_coupons")
 public class Coupons {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

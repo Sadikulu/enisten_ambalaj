@@ -1,6 +1,7 @@
 package com.kss.repository;
 
 import com.kss.domains.Product;
+import com.kss.domains.enums.BrandStatus;
 import com.kss.domains.enums.CategoryStatus;
 import com.kss.domains.enums.ProductStatus;
 import com.kss.dto.MostPopularProduct;
@@ -11,12 +12,13 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product,Long> {
+
+    Boolean existsByBrandId(Long id);
 
     Boolean existsByCategoryId(Long id);
 
@@ -29,16 +31,17 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
     @Query("SELECT p FROM OrderItem oi INNER JOIN oi.product p WHERE p.id=:productId")
     List<Product> checkOrderItemsByID(@Param("productId") Long id);
 
-    @Query("""
-            SELECT toi.product.id as productId, SUM(toi.quantity) as salesCount\s
-            FROM OrderItem toi\s
-            WHERE toi.createAt > :startDate\s
-            AND toi.product.category.status = :cStatus\s
-            AND toi.product.status = :pStatus
-            GROUP BY productId\s
-            ORDER BY salesCount DESC""")
+    @Query("SELECT toi.product.id as productId, SUM(toi.quantity) as salesCount \n" +
+            "FROM OrderItem toi \n" +
+            "WHERE toi.createAt > :startDate \n" +
+            "AND toi.product.category.status = :cStatus \n" +
+            "AND toi.product.brand.status = :bStatus\n" +
+            "AND toi.product.status = :pStatus\n" +
+            "GROUP BY productId \n" +
+            "ORDER BY salesCount DESC")
     List<MostPopularProduct> findMostPopularProductsOfLastMonth(@Param("startDate") LocalDateTime startDate,
                                                                 @Param("cStatus") CategoryStatus categoryStatus,
+                                                                @Param("bStatus") BrandStatus brandStatus,
                                                                 @Param("pStatus") ProductStatus productStatus,
                                                                 Pageable pageable);
 
@@ -57,37 +60,36 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
 
     Page<Product> findProductsByIdIn(List<Long> productIdList,Pageable pageable);
 
-    @Query("""
-            SELECT p
-            FROM Product p
-            WHERE p.featured = true
-              AND p.category.status = :cStatus
-              AND p.status = :pStatus""")
+    @Query("SELECT p\n" +
+            "FROM Product p\n" +
+            "WHERE p.featured = true\n" +
+            "  AND p.category.status = :cStatus\n" +
+            "  AND p.brand.status = :bStatus\n" +
+            "  AND p.status = :pStatus")
     Page<Product> findFeaturedProducts(@Param("cStatus") CategoryStatus categoryStatus,
+                                       @Param("bStatus") BrandStatus brandStatus,
                                        @Param("pStatus") ProductStatus productStatus,
                                        Pageable pageable);
 
-    @Query("""
-            SELECT p
-            FROM Product p
-            WHERE p.featured = true""")
+    @Query("SELECT p\n" +
+            "FROM Product p\n" +
+            "WHERE p.featured = true")
     Page<Product> findFeaturedProductsForAdmin(Pageable pageable);
 
-    @Query("""
-            SELECT p
-            FROM Product p
-            WHERE p.newProduct = true
-              AND p.category.status = :cStatus
-              AND p.status = :pStatus""")
+    @Query("SELECT p\n" +
+            "FROM Product p\n" +
+            "WHERE p.newProduct = true\n" +
+            "  AND p.category.status = :cStatus\n" +
+            "  AND p.brand.status = :bStatus\n" +
+            "  AND p.status = :pStatus")
     Page<Product> findNewProducts(@Param("cStatus") CategoryStatus categoryStatus,
+                                  @Param("bStatus") BrandStatus brandStatus,
                                   @Param("pStatus") ProductStatus productStatus,
                                   Pageable pageable);
 
-    @Query("""
-            SELECT p
-            FROM Product p
-            WHERE p.newProduct = true
-            """)
+    @Query("SELECT p\n" +
+            "FROM Product p\n" +
+            "WHERE p.newProduct = true\n")
     Page<Product> findNewProductsForAdmin(Pageable pageable);
 
     @EntityGraph(attributePaths = "id")

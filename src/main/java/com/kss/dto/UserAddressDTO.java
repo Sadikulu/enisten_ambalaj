@@ -1,12 +1,8 @@
 package com.kss.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import com.kss.domains.User;
+import lombok.*;
 import java.time.LocalDateTime;
-
 
 @Getter
 @Setter

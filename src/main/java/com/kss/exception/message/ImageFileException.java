@@ -1,4 +1,4 @@
-package com.kss.exception;
+package com.kss.exception.message;
 
 public class ImageFileException extends RuntimeException {
     private static final long serialVersionUID = 1L;

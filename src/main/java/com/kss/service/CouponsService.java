@@ -2,6 +2,7 @@ package com.kss.service;
 
 import com.kss.domains.Coupons;
 import com.kss.domains.User;
+import com.kss.domains.enums.CouponsStatus;
 import com.kss.dto.CouponDTO;
 import com.kss.dto.request.CouponMailRequest;
 import com.kss.dto.request.CouponRequest;
@@ -11,7 +12,6 @@ import com.kss.exception.ResourceNotFoundException;
 import com.kss.exception.message.ErrorMessage;
 import com.kss.mapper.CouponsMapper;
 import com.kss.repository.CouponsRepository;
-import com.kss.domains.enums.CouponsStatus;
 import com.kss.reusableMethods.UniqueIdGenerator;
 import com.kss.service.email.EmailSender;
 import com.kss.service.email.EmailService;
@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +33,6 @@ public class CouponsService {
     private final UserService userService;
     private final EmailSender emailSender;
     private final EmailService emailService;
-
-
 
     public Coupons getCoupon(Long id) {
         return couponsRepository.findById(id).orElseThrow(()->

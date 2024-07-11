@@ -1,11 +1,11 @@
 package com.kss.domains;
 
 import com.kss.domains.enums.ProductStatus;
+import com.kss.reusableMethods.UniqueIdGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,7 +17,6 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
 @Entity
 @Table(name = "t_products")
 public class Product {
@@ -87,6 +86,10 @@ public class Product {
 
     @Column
     private LocalDateTime updateAt;
+
+    @ManyToOne
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
 
     @ManyToOne
     @JoinColumn(name = "category_id")

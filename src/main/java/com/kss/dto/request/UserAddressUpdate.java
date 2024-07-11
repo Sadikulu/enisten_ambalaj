@@ -1,14 +1,7 @@
 package com.kss.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import lombok.*;
+import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
 @Getter
@@ -16,7 +9,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserAddressUpdate {
-
 
     @Size(max=30,message="Size is exceeded")
     @NotBlank(message = "Please provide your title")

@@ -1,20 +1,15 @@
 package com.kss.service;
 
-import com.kss.domains.Category;
-import com.kss.domains.Order;
-import com.kss.domains.Product;
-import com.kss.domains.User;
+import com.kss.domains.*;
 import com.kss.dto.MostPopularProduct;
 import com.kss.exception.message.ErrorMessage;
-import com.kss.report.ExcelReporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.kss.report.ExcelReporter;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-
 
 @Service
 public class ReportService {
@@ -23,29 +18,34 @@ public class ReportService {
     private CategoryService categoryService;
 
     @Autowired
+    private BrandService brandService;
+
+
+    @Autowired
     private ProductService productService;
 
     @Autowired
     private UserService userService;
     @Autowired
     private OrderService orderService;
-
+    @Autowired
+    private CouponsService couponsService;
 // **************************** REPORT *********************
 
     public ByteArrayInputStream getReport() {
 
 
         List<Category> categories=categoryService.getAllCategories();
-
+        List<Brand>  brands=brandService.getAllBrands();
         List<Product> products=productService.getAllProducts();
         List<Order> orders=orderService.getAllOrdersWithPage();
         List<User> users =  userService.getAllUsers();
-
+        List<Coupons> coupons =couponsService.getAllCoupons();
 
 
 
         try {
-            return ExcelReporter.getExcelReport(categories,products,orders,users);
+            return ExcelReporter.getExcelReport(categories,brands,products,orders,users,coupons);
         } catch (IOException e) {
             throw new RuntimeException(ErrorMessage.EXCEL_REPORT_ERROR_MESSAGE);
         }

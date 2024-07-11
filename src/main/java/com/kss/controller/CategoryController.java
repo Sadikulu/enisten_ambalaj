@@ -38,13 +38,13 @@ public class CategoryController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public ResponseEntity<KSSResponse> saveCategory(@Valid @RequestBody CategoryRequest categoryRequest) {
         CategoryDTO categoryDTO= categoryService.saveCategory(categoryRequest);
-       KSSResponse response = new KSSResponse(ResponseMessage.CATEGORY_CREATED_RESPONSE_MESSAGE, true,categoryDTO);
+        KSSResponse response = new KSSResponse(ResponseMessage.CATEGORY_CREATED_RESPONSE_MESSAGE, true,categoryDTO);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping()
     public ResponseEntity<Page<CategoryDTO>> getAllCategoriesWithPage(@RequestParam(value = "q",required = false)String query,
-                                                                      @RequestParam(value = "status",required = false) CategoryStatus status,
+                                                                      @RequestParam(value = "status",required = false)CategoryStatus status,
                                                                       @RequestParam("page") int page,
                                                                       @RequestParam("size") int size, @RequestParam("sort") String prop,
                                                                       @RequestParam(value = "direction", required = false, defaultValue = "DESC") Direction direction) {

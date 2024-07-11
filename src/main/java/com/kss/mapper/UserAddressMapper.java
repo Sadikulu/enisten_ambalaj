@@ -7,12 +7,10 @@ import com.kss.dto.request.UserAddressRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface UserAddressMapper {
-
 
     @Mapping(target = "userId",source = "user",qualifiedByName = "getUserIdForAddress")
     UserAddressDTO userAddressToUserAddressDTO(UserAddress userAddress);
