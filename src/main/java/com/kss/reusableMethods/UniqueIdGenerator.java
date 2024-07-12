@@ -12,7 +12,7 @@ public class UniqueIdGenerator {
         String uniqueId = DigestUtils.sha256Hex(uuid);
         String lengthFormattedCode = uniqueId.substring(0,length);
         String formattedCode = lengthFormattedCode.replaceAll("(.{4})(?!$)", "$1-");
-        return formattedCode.toUpperCase();
 
+        return formattedCode.toUpperCase();
     }
 }

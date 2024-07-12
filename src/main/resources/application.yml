@@ -13,7 +13,17 @@ spring:
     driver-class-name: org.postgresql.Driver
     hikari:
       auto-commit: false
-
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: kssambalaj@gmail.com
+    password: yguawliavqandllp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   jpa:
     hibernate:
       ddl-auto: update
@@ -21,34 +31,23 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
       '[hibernate.format_sql]': true
-
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: kssambalaj@gmail.com
-    password: norgbyzyabmalnpa
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-
   #image
   servlet:
     multipart:
       max-file-size: 2MB
       max-request-size: 2MB
+  profiles:
+    active: dev
 
 logging:
   file:
-    name: log/kss_ambalaj.log
+    name: log/kssambalaj.log
   pattern:
     file: "%d %-5level [%thread]  %logger:%msg%n"
   level:
     '[org.springframework.web]': WARN
     '[org.hibernate]': INFO
-    '[org.kss_ambalaj]': DEBUG
+    '[org.kssambalaj]': DEBUG
 
 management: #actuator
   endpoints:
@@ -64,18 +63,16 @@ management: #actuator
     shutdown:
       enabled:  true
 
-  kss_ambalaj:
-    app:
-      jwtSecret: KssAmbalaj200323KssYonetimBackendUygulamasiBurasi
-      jwtExpirationMS: 86400000
-      mailAddress: kssambalaj@gmail.com
-      backendLink: https://ecommerce-backend-v2.herokuapp.com/
-      resetPasswordLink: http://localhost:3000/
+kssambalaj:
+  app:
+    jwtSecret: GamingProMarket200323binaryBeastsGpMeCommerceOaIsReTaSaOzYuBe
+    jwtExpirationMS: 86400000
+    mailAddress: kssambalaj@gmail.com
+    backendLink: https://ecommerce-backend-v2.herokuapp.com/
+    resetPasswordLink: http://localhost:3000/
 
 info:
   application:
-    name: 'Kss Ambalaj Yonetim Backend App'
-    description: 'This is Kss Ambalaj Yonetim Backend Project'
+    name: 'KSS Ambalaj Backend App'
+    description: 'This is KSS Ambalaj E-Commerce Backend Project'
     version: '@project.version@'
-
-

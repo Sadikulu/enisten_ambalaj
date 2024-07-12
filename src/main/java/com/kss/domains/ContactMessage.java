@@ -7,6 +7,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+
 @Table(name="t_contact_message")
 @Entity
 public class ContactMessage {

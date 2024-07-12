@@ -20,12 +20,12 @@ public class JwtUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    @Value("${management.kss_ambalaj.app.jwtSecret}")
+    @Value("${kssambalaj.app.jwtSecret}")
     // jwtSecret değerini application.yml dosyasından alıyor
     private String jwtSecret ;
 
 
-    @Value("${management.kss_ambalaj.app.jwtExpirationMS}") // jwtExpirationMs değerini application.yml dosyasından alıyor
+    @Value("${kssambalaj.app.jwtExpirationMS}") // jwtExpirationMs değerini application.yml dosyasından alıyor
     private long jwtExpirationMs;
 
     private Key getSigningKey() {

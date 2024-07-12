@@ -61,9 +61,9 @@ public class UserService {
     private final EmailService emailService;
     private final ShoppingCartRepository shoppingCartRepository;
     private final ShoppingCartItemRepository shoppingCartItemRepository;
-    @Value("${management.kss_ambalaj.app.backendLink}")
+    @Value("${kssambalaj.app.backendLink}")
     private String backendLink;
-    @Value("${management.kss_ambalaj.app.resetPasswordLink}")
+    @Value("${kssambalaj.app.resetPasswordLink}")
     private String frontendLink;
 
     public User getUserByEmail(String email) {
@@ -448,21 +448,18 @@ public class UserService {
         userRepository.enableUser(status, email);
     }
 
-    public LoginResponse loginUser(//String cartUUID,
-                                   LoginRequest loginRequest) {
+    public LoginResponse loginUser(String cartUUID,LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
         Authentication authentication  =  authenticationManager.
                 authenticate(usernamePasswordAuthenticationToken);
         UserDetails userDetails  =  (UserDetails) authentication.getPrincipal() ;
         User user = getUserByEmail(userDetails.getUsername());
-//        ShoppingCart anonymousCart = shoppingCartRepository.findByCartUUID(cartUUID).orElseThrow(()->
-//                new ResourceNotFoundException(String.format(ErrorMessage.RESOURCE_NOT_FOUND_MESSAGE,cartUUID)));
-        ShoppingCart anonymousCart = shoppingCartRepository.findByCartUUID(user.getShoppingCart().getCartUUID()).orElseThrow(()->
-                new ResourceNotFoundException(String.format(ErrorMessage.RESOURCE_NOT_FOUND_MESSAGE,user.getShoppingCart().getCartUUID())));
+        ShoppingCart anonymousCart = shoppingCartRepository.findByCartUUID(cartUUID).orElseThrow(()->
+                new ResourceNotFoundException(String.format(ErrorMessage.RESOURCE_NOT_FOUND_MESSAGE,cartUUID)));
         ShoppingCart userCart = user.getShoppingCart();
-        if (!anonymousCart.getShoppingCartItem().isEmpty()){
-            if (userCart.getShoppingCartItem().isEmpty()) {
+        if (anonymousCart.getShoppingCartItem().size()!=0){
+            if (userCart.getShoppingCartItem().size()==0) {
                 for (ShoppingCartItem anonymousCartItem: anonymousCart.getShoppingCartItem()) {
                     ShoppingCartItem shoppingCartItem = new ShoppingCartItem();
                     shoppingCartItem.setProduct(anonymousCartItem.getProduct());

@@ -13,6 +13,7 @@ import java.util.Optional;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review,Long>{
 
+
     Page<Review> findAll(Pageable pageable);
 
     Page<Review> findAllReviewByUser(User user, Pageable pageable );

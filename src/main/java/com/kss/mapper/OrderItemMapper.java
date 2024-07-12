@@ -12,6 +12,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface OrderItemMapper {
+
     DecimalFormat df = new DecimalFormat("#.##");
 
     @Mapping(source = "product",target = "productId",qualifiedByName = "getProductId")

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.mapstruct.Mapping;
 import javax.validation.constraints.*;
 import java.util.Set;
 
@@ -15,7 +16,7 @@ import java.util.Set;
 public class ProductUpdateRequest {
 
     @NotBlank(message = "You must provide a title")
-    @Size(min = 5, max = 150, message = "The Title you have entered '${validatedValue}' must be between {min} and {max} character long")
+    @Size(min = 2, max = 150, message = "The Title you have entered '${validatedValue}' must be between {min} and {max} character long")
     private String title;
 
     @NotBlank

@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @Table(name = "t_password_reset_token")
 @Entity
 public class PasswordResetToken {
-
     @SequenceGenerator(
             name = "password_reset_token_sequence",
             sequenceName = "password_reset_token_sequence",

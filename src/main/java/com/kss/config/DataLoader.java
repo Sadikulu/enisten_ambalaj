@@ -1,8 +1,10 @@
 package com.kss.config;
 
 import com.kss.domains.Role;
+import com.kss.domains.User;
 import com.kss.domains.enums.RoleType;
 import com.kss.repository.RoleRepository;
+import com.kss.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

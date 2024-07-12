@@ -34,6 +34,8 @@ public class CouponsService {
     private final EmailSender emailSender;
     private final EmailService emailService;
 
+
+
     public Coupons getCoupon(Long id) {
         return couponsRepository.findById(id).orElseThrow(()->
                 new ResourceNotFoundException(String.format(ErrorMessage.RESOURCE_NOT_FOUND_MESSAGE, id))

@@ -36,10 +36,9 @@ public class UserJwtController {
 
     // login
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> authenticate(//@RequestHeader(value = "cartUUID",required = false)String cartUUID,
-                                                      @Valid @RequestBody LoginRequest loginRequest)  {
-        LoginResponse response = userService.loginUser(//cartUUID,
-                loginRequest);
+    public ResponseEntity<LoginResponse> authenticate(@RequestHeader(value = "cartUUID",required = false)String cartUUID,@Valid @RequestBody LoginRequest loginRequest)  {
+        System.out.println("cartUUID = " + cartUUID);
+        LoginResponse response = userService.loginUser(cartUUID,loginRequest);
         return new ResponseEntity<>(response,HttpStatus.OK);
 
     }
@@ -58,5 +57,22 @@ public class UserJwtController {
         return ResponseEntity.ok(response);
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

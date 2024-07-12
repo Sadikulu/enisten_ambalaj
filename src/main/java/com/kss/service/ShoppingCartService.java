@@ -44,48 +44,43 @@ public class ShoppingCartService {
                 new ResourceNotFoundException(String.format(ErrorMessage.RESOURCE_NOT_FOUND_MESSAGE,cartUUID)));
     }
 
-    public ShoppingCartItemDTO createCartItem(String cartUUID,ShoppingCartRequest shoppingCartRequest) {
-
+    public ShoppingCartItemDTO createCartItem(String cartUUID, ShoppingCartRequest shoppingCartRequest) {
         ShoppingCart shoppingCart = findShoppingCartByUUID(cartUUID);
-
         Double totalPrice;
-
         Product product = productService.findProductById(shoppingCartRequest.getProductId());
         ShoppingCartItem foundItem = shoppingCartItemRepository.findByProductIdAndShoppingCartCartUUID(product.getId(), shoppingCart.getCartUUID());
         ShoppingCartItem shoppingCartItem = null;
-        if (shoppingCartRequest.getQuantity() > product.getStockAmount()){
-            throw new BadRequestException(String.format(ErrorMessage.PRODUCT_OUT_OF_STOCK_MESSAGE,product.getId()));
+
+        if (shoppingCartRequest.getQuantity() > product.getStockAmount()) {
+            throw new BadRequestException(String.format(ErrorMessage.PRODUCT_OUT_OF_STOCK_MESSAGE, product.getId()));
         }
-        if (shoppingCart.getShoppingCartItem().size()>0 && shoppingCart.getShoppingCartItem().contains(foundItem)) {
-            if (shoppingCartRequest.getQuantity() > foundItem.getProduct().getStockAmount()){
-                throw new BadRequestException(String.format(ErrorMessage.PRODUCT_OUT_OF_STOCK_MESSAGE,product.getId()));
-            }
+
+        if (foundItem != null) {
             Integer quantity = foundItem.getQuantity() + shoppingCartRequest.getQuantity();
+            if (quantity > product.getStockAmount()) {
+                throw new BadRequestException(String.format(ErrorMessage.PRODUCT_OUT_OF_STOCK_MESSAGE, product.getId()));
+            }
             foundItem.setQuantity(quantity);
-            totalPrice = quantity*product.getPrice();
+            totalPrice = quantity * product.getPrice();
             foundItem.setTotalPrice(totalPrice);
+            foundItem.setUpdateAt(LocalDateTime.now());
             shoppingCartItemRepository.save(foundItem);
-            shoppingCart.setGrandTotal(shoppingCart.getGrandTotal()+(shoppingCartRequest.getQuantity()*foundItem.getProduct().getPrice()));
+            shoppingCart.setGrandTotal(shoppingCart.getGrandTotal() + shoppingCartRequest.getQuantity() * product.getPrice());
             shoppingCartItem = foundItem;
-            shoppingCartItem.setUpdateAt(LocalDateTime.now());
-        } else{
+        } else {
             shoppingCartItem = new ShoppingCartItem();
             shoppingCartItem.setProduct(product);
             shoppingCartItem.setQuantity(shoppingCartRequest.getQuantity());
             shoppingCartItem.setShoppingCart(shoppingCart);
-            totalPrice = shoppingCartRequest.getQuantity()*product.getPrice();
+            totalPrice = shoppingCartRequest.getQuantity() * product.getPrice();
             shoppingCartItem.setTotalPrice(totalPrice);
             shoppingCartItemRepository.save(shoppingCartItem);
             shoppingCart.getShoppingCartItem().add(shoppingCartItem);
-            shoppingCart.setGrandTotal(shoppingCart.getGrandTotal()+totalPrice);
+            shoppingCart.setGrandTotal(shoppingCart.getGrandTotal() + totalPrice);
         }
-
         shoppingCartRepository.save(shoppingCart);
         return shoppingCartItemMapper.shoppingCartItemToShoppingCartItemDTO(shoppingCartItem);
     }
-
-
-
 
     public ShoppingCartItemDTO removeItemById(String cartUUID,Long productId) {
         ShoppingCart shoppingCart = shoppingCartRepository.findByCartUUID(cartUUID).orElseThrow(()->

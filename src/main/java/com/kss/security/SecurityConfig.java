@@ -2,6 +2,7 @@ package com.kss.security;
 
 import com.kss.security.jwt.AuthTokenFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -28,14 +29,18 @@ public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
 
+    @Value("${cors.allowed.origins}")
+    private String[] allowedOrigins;
+
     @Bean
-    public SecurityFilterChain filterChain( HttpSecurity http ) throws Exception{
-        http.csrf().disable().
-                sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
-                and(). 
-                authorizeRequests().antMatchers(HttpMethod.OPTIONS,"/**").permitAll().and().
-                authorizeRequests().
-                antMatchers(
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .and()
+                .authorizeRequests()
+                .antMatchers(
                         "/login",
                         "/register",
                         "/confirm",
@@ -52,11 +57,11 @@ public class SecurityConfig {
                         "/actuator/info",
                         "/actuator/health",
                         "/brands/**",
-                        "/database/**").permitAll().
-                anyRequest().authenticated();
+                        "/database/**").permitAll()
+                .anyRequest().authenticated();
+
         http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
-
     }
 
     @Bean
@@ -64,15 +69,15 @@ public class SecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("*").
-                        allowedHeaders("*").
-                        allowedMethods("*");
+                registry.addMapping("/**")
+                        .allowedOrigins(allowedOrigins)
+                        .allowedHeaders("*")
+                        .allowedMethods("*");
             }
         };
     }
 
-
-    private static final String [] AUTH_WHITE_LIST= {
+    private static final String[] AUTH_WHITE_LIST = {
             "/v3/api-docs/**",
             "swagger-ui.html",
             "/swagger-ui/**",
@@ -85,20 +90,13 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        WebSecurityCustomizer customizer=new WebSecurityCustomizer() {
-            @Override
-            public void customize(WebSecurity web) {
-                web.ignoring().antMatchers(AUTH_WHITE_LIST);
-            }
-        };
-        return customizer;
+        return web -> web.ignoring().antMatchers(AUTH_WHITE_LIST);
     }
 
     @Bean
     public AuthTokenFilter authTokenFilter() {
         return new AuthTokenFilter();
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -111,13 +109,12 @@ public class SecurityConfig {
         authenticationProvider.setUserDetailsService(userDetailsService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
-
     }
 
     @Bean
-    public AuthenticationManager authManager( HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class).
-                authenticationProvider(authProvider() ).
-                build();
+    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
+                .authenticationProvider(authProvider())
+                .build();
     }
 }

@@ -1,11 +1,11 @@
 package com.kss.domains;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kss.domains.enums.BrandStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

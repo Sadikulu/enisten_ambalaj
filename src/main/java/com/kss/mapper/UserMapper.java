@@ -4,6 +4,7 @@ import com.kss.domains.User;
 import com.kss.dto.UserDTO;
 import com.kss.dto.UserDeleteDTO;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import java.util.List;
 
 @Mapper(componentModel = "spring",uses = ProductMapper.class)

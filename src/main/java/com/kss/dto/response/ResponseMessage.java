@@ -1,6 +1,7 @@
 package com.kss.dto.response;
 
 public class ResponseMessage {
+
     public final static  String ACCOUNT_CONFIRMED_RESPONSE="Account successfully confirmed";
     
     public final static  String CONTACTMESSAGE_CREATE_RESPONSE="ContactMessage successfully created";
@@ -76,4 +77,5 @@ public class ResponseMessage {
     public final static String BRAND_DELETE_RESPONSE_MESSAGE= "Brand  successfully deleted";
 
     public final static String BRAND_UPDATE_RESPONSE_MESSAGE= "Brand  successfully updated";
+
 }

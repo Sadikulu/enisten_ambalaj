@@ -16,6 +16,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +27,7 @@ public class EmailService implements EmailSender{
 
     private final JavaMailSender mailSender;
 
-    @Value("${management.kss_ambalaj.app.mailAddress}")
+    @Value("${kssambalaj.app.mailAddress}")
     private String mailAddress;
 
     private static final Logger logger = LoggerFactory.getLogger(EmailService.class);

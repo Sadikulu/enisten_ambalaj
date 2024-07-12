@@ -35,7 +35,6 @@ public class ExcelReporter {
 
     static String SHEET_STOCK_ALARM_PRODUCTS = "StockAlarmProducts";
     static String[] STOCK_ALARM_HEADERS = {"Id", "Title", "Price", "Category", "Stock Amount", "Stock Limit"};
-
     static String SHEET_UNORDERED_PRODUCTS = "StockAlarmProducts";
     static String[] UNORDERED_PRODUCTS_HEADERS = {"Id", "Title", "Price", "Category"};
 

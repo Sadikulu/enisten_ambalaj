@@ -36,22 +36,33 @@ public class KSSAmbalajExceptionHandler extends ResponseEntityExceptionHandler {
         ApiResponseError error =  new ApiResponseError( HttpStatus.NOT_FOUND,
                 ex.getMessage(),
                 request.getDescription(false));
-        return buildResponseEntity(error);
 
+        /*
+         *  Map<String,String> map= new HashMap<>();
+         *  map.put("time", LocalDateTime.now().toString());
+         *  map.put("message", ex.getMessage());
+         *  return new ResponseEntity<>(map,HttpStatus.CREATED);
+         */
+
+
+        return buildResponseEntity(error);
     }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers, HttpStatus status, WebRequest request) {
+
         List<String> errors = ex.getBindingResult().getFieldErrors(). // bütün field errorlarını get ile aldım
                 stream().
                 map(e->e.getDefaultMessage()).//bütün errorların getMessage() metodunu alıyorum
                         collect(Collectors.toList());
+
         ApiResponseError error = new  ApiResponseError(HttpStatus.BAD_REQUEST,
                 errors.get(0).toString(),
                 request.getDescription(false));
 
         return buildResponseEntity(error);
+
 
     }
 
@@ -62,7 +73,6 @@ public class KSSAmbalajExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getMessage(),
                 request.getDescription(false));
         return buildResponseEntity(error);
-
     }
 
     @Override
@@ -72,12 +82,12 @@ public class KSSAmbalajExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getMessage(),
                 request.getDescription(false));
         return buildResponseEntity(error);
-
     }
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
                                                                   HttpHeaders headers, HttpStatus status, WebRequest request) {
+
         ApiResponseError error = new  ApiResponseError(HttpStatus.BAD_REQUEST,
                 ex.getMessage(),
                 request.getDescription(false));
@@ -91,8 +101,10 @@ public class KSSAmbalajExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getMessage(),
                 request.getDescription(false));
         return buildResponseEntity(error);
-
     }
+
+
+    // Security ile ilgili Exceptionlar handle adiliyor
 
     @ExceptionHandler(AccessDeniedException.class)
     protected ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
@@ -100,7 +112,6 @@ public class KSSAmbalajExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getMessage(),
                 request.getDescription(false));
         return buildResponseEntity(error);
-
     }
 
     @ExceptionHandler(AuthenticationException.class)
@@ -109,8 +120,8 @@ public class KSSAmbalajExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getMessage(),
                 request.getDescription(false));
         return buildResponseEntity(error);
-
     }
+
 
     @ExceptionHandler(BadRequestException.class)
     protected ResponseEntity<Object> handleBadRequestException(BadRequestException ex, WebRequest request) {
@@ -118,7 +129,6 @@ public class KSSAmbalajExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getMessage(),
                 request.getDescription(false));
         return buildResponseEntity(error);
-
     }
 
     @ExceptionHandler(ImageFileException.class)
@@ -127,11 +137,11 @@ public class KSSAmbalajExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getMessage(),
                 request.getDescription(false));
         return buildResponseEntity(error);
-
     }
 
     @ExceptionHandler(RuntimeException.class)
     protected ResponseEntity<Object> handleRuntimeException ( RuntimeException ex, WebRequest  request  )   {
+
         ApiResponseError error =  new ApiResponseError( HttpStatus.INTERNAL_SERVER_ERROR,
                 ex.getMessage(),
                 request.getDescription(false)  );
@@ -142,6 +152,7 @@ public class KSSAmbalajExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<Object> handleGeneralException ( Exception ex, WebRequest  request  )   {
+
         ApiResponseError error =  new ApiResponseError( HttpStatus.INTERNAL_SERVER_ERROR,
                 ex.getMessage(),
                 request.getDescription(false)  );

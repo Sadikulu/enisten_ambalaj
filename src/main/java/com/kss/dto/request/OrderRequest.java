@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderRequest {
+
     @NotBlank
     private String contactName;
     @NotBlank

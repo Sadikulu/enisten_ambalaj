@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class KSSResponse {
+
     private String message;
     private Boolean success;
     private Object data;
@@ -17,5 +18,6 @@ public class KSSResponse {
     public KSSResponse(String message, boolean success) {
         this.message=message;
         this.success=success;
+
     }
 }

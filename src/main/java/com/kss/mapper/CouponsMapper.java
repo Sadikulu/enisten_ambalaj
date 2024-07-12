@@ -25,6 +25,7 @@ public interface CouponsMapper {
     @Mapping(target = "createdAt", ignore = true)
     Coupons couponsUpdateRequestToCoupons(CouponUpdateRequest couponUpdateRequest);
 
+
 //  List<Coupons>  --->   List<CouponDTO>
     List<CouponDTO> map(List<Coupons> couponsList);
 }

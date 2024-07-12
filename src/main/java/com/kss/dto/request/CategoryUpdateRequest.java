@@ -1,5 +1,6 @@
 package com.kss.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kss.domains.enums.CategoryStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -9,11 +9,14 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 public class ImageSavedResponse extends KSSResponse {
+
     private Set<String> imageId;
 
-   public ImageSavedResponse(Set<String> imageId,String message,boolean success) {
-       super(message, success);
-    this.imageId=imageId;
+    public ImageSavedResponse(Set<String> imageId, String message, boolean success) {
+        super(message, success);
+        this.imageId = imageId;
 
-   }
+    }
+
+
 }

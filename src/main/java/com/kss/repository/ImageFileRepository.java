@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface ImageFileRepository extends JpaRepository<ImageFile, String> {
+
     @EntityGraph(attributePaths = "id")
     List<ImageFile>findAll();
 

@@ -28,6 +28,7 @@ public interface ProductMapper {
 
     List<FavoriteProductDTO> productListToFavoriteProductDTOList(List<Product> productList);
 
+
     @Mapping(target="brand", ignore=true)
     @Mapping(target="category", ignore=true)
     @Mapping(target="sku", ignore=true)
@@ -40,6 +41,7 @@ public interface ProductMapper {
     @Mapping(target="sku", ignore=true)
     @Mapping(target="image", ignore=true)
     Product productUpdateRequestToProduct(ProductUpdateRequest productUpdateRequest);
+
 
     @Named("getProductId")
     public static Long getProductId(Product product) {

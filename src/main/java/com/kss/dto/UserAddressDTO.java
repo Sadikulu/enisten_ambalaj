@@ -2,6 +2,7 @@ package com.kss.dto;
 
 import com.kss.domains.User;
 import lombok.*;
+import javax.persistence.Column;
 import java.time.LocalDateTime;
 
 @Getter

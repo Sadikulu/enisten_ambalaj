@@ -1,6 +1,7 @@
 package com.kss.dto.request;
 
 import lombok.*;
+import javax.persistence.Column;
 import javax.validation.constraints.*;
 
 @Getter

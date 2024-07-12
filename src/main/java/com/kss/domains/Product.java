@@ -1,5 +1,6 @@
 package com.kss.domains;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kss.domains.enums.ProductStatus;
 import com.kss.reusableMethods.UniqueIdGenerator;
 import lombok.AllArgsConstructor;

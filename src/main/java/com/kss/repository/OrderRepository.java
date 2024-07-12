@@ -18,6 +18,7 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order,Long> {
+
     //**********************GETALLORDERS****************************
    @Query("SELECT o from Order o where o.code=:query and o.status=:status and" +
            " o.createAt >:date1 and o.createAt<:date2 " )
